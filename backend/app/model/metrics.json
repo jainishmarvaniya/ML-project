@@ -1,0 +1,28 @@
+{
+  "MAE": 31.7882,
+  "MSE": 1956.6676,
+  "RMSE": 44.2342,
+  "RSS": 2318651.1357,
+  "MAPE": 1.0023,
+  "R2": 0.989606,
+  "Adjusted_R2": 0.989562,
+  "Total_Rows": 5925,
+  "Train_Rows": 4740,
+  "Test_Rows": 1185,
+  "Features": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume"
+  ],
+  "Target": "Next_Day_Close",
+  "Coefficients": {
+    "Open": -0.051376,
+    "High": 0.053324,
+    "Low": 0.129814,
+    "Close": 0.870128,
+    "Volume": 0.0
+  },
+  "Intercept": -0.206681
+}
