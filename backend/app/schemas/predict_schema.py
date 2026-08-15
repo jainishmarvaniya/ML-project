@@ -46,3 +46,19 @@ class HistoricalRecord(BaseModel):
     Close: float
     Volume: float
     Next_Day_Close: float
+
+class RecommendInput(BaseModel):
+    Open: float = Field(..., description="Opening Stock Price", example=3950.0)
+    High: float = Field(..., description="Day High Stock Price", example=3980.0)
+    Low: float = Field(..., description="Day Low Stock Price", example=3920.0)
+    Close: float = Field(..., description="Today's Closing Price", example=3960.0)
+    Volume: float = Field(..., description="Trading Volume", example=1500000.0)
+
+class RecommendOutput(BaseModel):
+    recommended_model: str
+    reason: str
+    expected_accuracy: float
+    confidence_score: float
+    cv_score: float
+    cv_std: float
+    all_scores: List[Dict[str, Any]]

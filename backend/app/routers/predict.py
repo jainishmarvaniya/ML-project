@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List, Dict, Any
-from app.schemas.predict_schema import PredictionInput, PredictionOutput
+from app.schemas.predict_schema import PredictionInput, PredictionOutput, RecommendInput, RecommendOutput
 from app.services.model_service import model_service
 
 router = APIRouter(prefix="", tags=["Prediction"])
@@ -59,4 +59,26 @@ def compare_models():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Comparison failed: {str(e)}",
+        )
+
+@router.post(
+    "/recommend",
+    summary="Get AI Model Recommendation",
+    description="Analyzes all models using cross-validation and recommends the best one for the given input."
+)
+def recommend_model(payload: RecommendInput):
+    try:
+        input_features = {
+            "Open": payload.Open,
+            "High": payload.High,
+            "Low": payload.Low,
+            "Close": payload.Close,
+            "Volume": payload.Volume,
+        }
+        result = model_service.recommend_model(input_features)
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Recommendation failed: {str(e)}",
         )

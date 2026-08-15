@@ -278,7 +278,7 @@ export const Prediction = () => {
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
-                  <span>Train Model & Predict</span>
+                  <span>Predict close price</span>
                 </>
               )}
             </button>

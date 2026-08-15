@@ -45,4 +45,10 @@ export const getDatasetRecords = async (limit = 1000, skip = 0) => {
   return response.data;
 };
 
+export const getModelRecommendation = async (payload) => {
+  const response = await api.post('/recommend', payload);
+  return response.data;
+};
+
 export default api;
+

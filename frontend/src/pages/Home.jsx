@@ -127,7 +127,7 @@ export const Home = () => {
           >
             Predict The <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400">
-              Future of TCS
+               TCS Prices
             </span>
           </motion.h1>
 

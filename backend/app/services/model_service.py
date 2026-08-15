@@ -21,7 +21,7 @@ from xgboost import XGBRegressor
 from catboost import CatBoostRegressor
 
 # Metrics and Selection
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import (
     mean_absolute_error,
     mean_squared_error,
@@ -242,6 +242,157 @@ class ModelService:
             item["Rank"] = idx + 1
             
         return leaderboard
+
+    def recommend_model(self, input_features: dict) -> dict:
+        """
+        Evaluates every available model using cross-validation and a weighted
+        composite score, then returns the best model along with a human-readable
+        explanation and full ranking details.
+        """
+        if self.X_train is None:
+            raise RuntimeError("Dataset not loaded properly.")
+
+        X_full = self.df[FEATURE_COLUMNS]
+        y_full = self.df[TARGET_COLUMN]
+        n = len(self.X_test)
+        p = len(FEATURE_COLUMNS)
+
+        def evaluate_single(m_name):
+            try:
+                model_class_or_func = AVAILABLE_MODELS[m_name]
+                if callable(model_class_or_func) and not isinstance(model_class_or_func, type):
+                    model = model_class_or_func()
+                else:
+                    model = model_class_or_func()
+
+                # Cross-validation
+                cv_scores = cross_val_score(model, X_full, y_full, cv=5, scoring="r2")
+                cv_mean = float(np.mean(cv_scores))
+                cv_std = float(np.std(cv_scores))
+
+                # Train / test metrics
+                t0 = time.time()
+                model.fit(self.X_train, self.y_train)
+                training_time = time.time() - t0
+
+                y_train_pred = model.predict(self.X_train)
+                y_test_pred = model.predict(self.X_test)
+
+                train_r2 = float(r2_score(self.y_train, y_train_pred))
+                test_r2 = float(r2_score(self.y_test, y_test_pred))
+                rmse = float(np.sqrt(mean_squared_error(self.y_test, y_test_pred)))
+                mae = float(mean_absolute_error(self.y_test, y_test_pred))
+                mape = float(mean_absolute_percentage_error(self.y_test, y_test_pred))
+
+                return {
+                    "model": m_name,
+                    "cv_mean": cv_mean,
+                    "cv_std": cv_std,
+                    "train_r2": train_r2,
+                    "test_r2": test_r2,
+                    "rmse": rmse,
+                    "mae": mae,
+                    "mape": mape,
+                    "training_time": round(training_time, 4),
+                }
+            except Exception as exc:
+                print(f"[recommend_model] Skipping '{m_name}': {exc}")
+                return None
+
+        # Run all evaluations in parallel
+        results = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+            future_to_name = {
+                executor.submit(evaluate_single, name): name
+                for name in AVAILABLE_MODELS
+            }
+            for future in concurrent.futures.as_completed(future_to_name):
+                res = future.result()
+                if res is not None:
+                    results.append(res)
+
+        if not results:
+            raise RuntimeError("All models failed during recommendation evaluation.")
+
+        # Normalization helpers
+        max_rmse = max(r["rmse"] for r in results) or 1.0
+        max_mae = max(r["mae"] for r in results) or 1.0
+
+        # Compute composite score for every model
+        for r in results:
+            normalized_rmse = r["rmse"] / max_rmse
+            normalized_mae = r["mae"] / max_mae
+            generalization_score = max(0.0, 1.0 - abs(r["train_r2"] - r["test_r2"]))
+            r["composite_score"] = (
+                (r["cv_mean"] * 0.40)
+                + (r["test_r2"] * 0.25)
+                + ((1 - normalized_rmse) * 0.20)
+                + ((1 - normalized_mae) * 0.10)
+                + (generalization_score * 0.05)
+            )
+            r["generalization_score"] = generalization_score
+
+        # Sort descending by composite score
+        results.sort(key=lambda x: x["composite_score"], reverse=True)
+        best = results[0]
+
+        # Build human-readable reason
+        reason_parts = []
+
+        # Highest CV score?
+        if best["cv_mean"] == max(r["cv_mean"] for r in results):
+            reason_parts.append(
+                f"Highest Cross-Validation Score ({round(best['cv_mean'], 4)})"
+            )
+
+        # Lowest RMSE?
+        if best["rmse"] == min(r["rmse"] for r in results):
+            reason_parts.append(f"Lowest RMSE ({round(best['rmse'], 2)})")
+
+        # Lowest MAE?
+        if best["mae"] == min(r["mae"] for r in results):
+            reason_parts.append(f"Lowest MAE ({round(best['mae'], 2)})")
+
+        # Best generalization gap?
+        best_gen = max(r["generalization_score"] for r in results)
+        if best["generalization_score"] == best_gen:
+            reason_parts.append(
+                f"Best generalization gap ({round(abs(best['train_r2'] - best['test_r2']), 4)})"
+            )
+
+        # Highest test R²?
+        if best["test_r2"] == max(r["test_r2"] for r in results):
+            reason_parts.append(f"Highest Test R² ({round(best['test_r2'], 4)})")
+
+        if not reason_parts:
+            reason_parts.append(
+                f"Best overall composite score ({round(best['composite_score'], 4)})"
+            )
+
+        reason = ", ".join(reason_parts)
+
+        all_scores = [
+            {
+                "model": r["model"],
+                "cv_mean": round(r["cv_mean"], 4),
+                "cv_std": round(r["cv_std"], 4),
+                "composite_score": round(r["composite_score"], 4),
+                "rmse": round(r["rmse"], 4),
+                "mae": round(r["mae"], 4),
+                "test_r2": round(r["test_r2"], 4),
+            }
+            for r in results
+        ]
+
+        return {
+            "recommended_model": best["model"],
+            "reason": reason,
+            "expected_accuracy": round(best["test_r2"] * 100, 2),
+            "confidence_score": round(best["cv_mean"] * 100, 2),
+            "cv_score": round(best["cv_mean"], 4),
+            "cv_std": round(best["cv_std"], 4),
+            "all_scores": all_scores,
+        }
 
     # Retaining dataset info endpoints for existing routers
     def get_dataset_info(self) -> dict:
