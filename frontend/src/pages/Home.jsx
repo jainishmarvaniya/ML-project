@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { GlassCard } from '../components/GlassCard';
 import { StatCard } from '../components/StatCard';
 import { useApp } from '../context/AppContext';
+
 import { 
   TrendingUp, 
   Cpu, 
