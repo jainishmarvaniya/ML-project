@@ -17,8 +17,17 @@ from sklearn.ensemble import (
 )
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
-from xgboost import XGBRegressor
-from catboost import CatBoostRegressor
+try:
+    from xgboost import XGBRegressor
+    HAS_XGBOOST = True
+except Exception:
+    HAS_XGBOOST = False
+
+try:
+    from catboost import CatBoostRegressor
+    HAS_CATBOOST = True
+except Exception:
+    HAS_CATBOOST = False
 
 # Metrics and Selection
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -42,11 +51,15 @@ AVAILABLE_MODELS = {
     "Extra Trees Regressor": lambda: ExtraTreesRegressor(n_estimators=50, random_state=42, n_jobs=-1),
     "Gradient Boosting Regressor": lambda: GradientBoostingRegressor(n_estimators=50, random_state=42),
     "AdaBoost Regressor": lambda: AdaBoostRegressor(n_estimators=50, random_state=42),
-    "XGBoost Regressor": lambda: XGBRegressor(n_estimators=50, random_state=42, objective='reg:squarederror', n_jobs=-1),
-    "CatBoost Regressor": lambda: CatBoostRegressor(iterations=100, random_state=42, verbose=0, thread_count=-1),
     "KNeighbors Regressor": KNeighborsRegressor,
     "SVR": SVR,
 }
+
+if HAS_XGBOOST:
+    AVAILABLE_MODELS["XGBoost Regressor"] = lambda: XGBRegressor(n_estimators=50, random_state=42, objective='reg:squarederror', n_jobs=-1)
+
+if HAS_CATBOOST:
+    AVAILABLE_MODELS["CatBoost Regressor"] = lambda: CatBoostRegressor(iterations=100, random_state=42, verbose=0, thread_count=-1)
 
 class ModelService:
     def __init__(self):

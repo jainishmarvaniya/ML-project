@@ -3,6 +3,11 @@
   "installCommand": "cd frontend 2>/dev/null || true; npm install",
   "buildCommand": "cd frontend 2>/dev/null || true; npm install && npm run build",
   "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "backend/**,TCS_Historical_Data.csv"
+    }
+  },
   "rewrites": [
     {
       "source": "/(models|predict|compare|metrics|dataset-info|dataset|recommend)",
