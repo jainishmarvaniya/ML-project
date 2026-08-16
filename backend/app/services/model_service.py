@@ -52,13 +52,25 @@ class ModelService:
     def __init__(self):
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.project_root = os.path.abspath(os.path.join(self.base_dir, "..", "..", ".."))
-        self.csv_path = os.path.join(self.project_root, "TCS_Historical_Data.csv")
+        self.csv_path = self._find_csv_path()
         self.df = None
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
         self._load_and_prepare_dataset()
+
+    def _find_csv_path(self) -> str:
+        candidates = [
+            os.path.join(self.project_root, "TCS_Historical_Data.csv"),
+            os.path.join(self.base_dir, "..", "..", "TCS_Historical_Data.csv"),
+            os.path.join(os.getcwd(), "TCS_Historical_Data.csv"),
+            os.path.join(os.getcwd(), "backend", "TCS_Historical_Data.csv"),
+        ]
+        for candidate in candidates:
+            if os.path.exists(candidate):
+                return candidate
+        return candidates[0]
 
     def _load_and_prepare_dataset(self):
         if os.path.exists(self.csv_path):
@@ -88,6 +100,21 @@ class ModelService:
 
     def get_available_models(self) -> list:
         return list(AVAILABLE_MODELS.keys())
+
+    def get_metrics(self) -> dict:
+        if self.X_train is None:
+            raise RuntimeError("Dataset not loaded properly.")
+            
+        result = self.train_and_predict("Linear Regression", {
+            "Open": 3950.0, "High": 3980.0, "Low": 3920.0, "Close": 3960.0, "Volume": 1500000
+        })
+        return {
+            "default_model": "Linear Regression",
+            "metrics": result["metrics"],
+            "fit": result["fit"],
+            "training_time": result["training_time"],
+            "testing_time": result["testing_time"]
+        }
 
     def _calculate_metrics(self, y_true, y_pred, n, p) -> dict:
         mae = mean_absolute_error(y_true, y_pred)
