@@ -1,7 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd frontend 2>/dev/null || true; npm install",
-  "buildCommand": "cd frontend 2>/dev/null || true; npm install && npm run build",
+  "installCommand": "pip install -r requirements.txt && (cd frontend 2>/dev/null || true; npm install)",
+  "buildCommand": "cd frontend 2>/dev/null || true; npm run build",
+
   "outputDirectory": "frontend/dist",
   "functions": {
     "api/index.py": {
