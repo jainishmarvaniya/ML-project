@@ -74,16 +74,21 @@ class ModelService:
         self._load_and_prepare_dataset()
 
     def _find_csv_path(self) -> str:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
-            os.path.join(self.project_root, "TCS_Historical_Data.csv"),
-            os.path.join(self.base_dir, "..", "..", "TCS_Historical_Data.csv"),
+            os.path.abspath(os.path.join(current_dir, "..", "..", "..", "TCS_Historical_Data.csv")),
+            os.path.abspath(os.path.join(current_dir, "..", "..", "TCS_Historical_Data.csv")),
+            os.path.abspath(os.path.join(current_dir, "..", "TCS_Historical_Data.csv")),
             os.path.join(os.getcwd(), "TCS_Historical_Data.csv"),
             os.path.join(os.getcwd(), "backend", "TCS_Historical_Data.csv"),
+            os.path.join("/var/task", "TCS_Historical_Data.csv"),
+            os.path.join("/var/task", "backend", "TCS_Historical_Data.csv"),
         ]
         for candidate in candidates:
             if os.path.exists(candidate):
                 return candidate
         return candidates[0]
+
 
     def _load_and_prepare_dataset(self):
         if os.path.exists(self.csv_path):
