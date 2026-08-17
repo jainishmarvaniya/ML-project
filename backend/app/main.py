@@ -28,12 +28,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include Routers
+# Include Routers with both root and /api prefixes
 app.include_router(predict.router)
+app.include_router(predict.router, prefix="/api")
 app.include_router(metrics.router)
+app.include_router(metrics.router, prefix="/api")
 app.include_router(dataset.router)
+app.include_router(dataset.router, prefix="/api")
 
 @app.get("/", summary="Health Check and API Metadata")
+@app.get("/api", summary="Health Check and API Metadata")
+@app.get("/api/index.py", summary="Health Check and API Metadata")
 def root():
     return {
         "status": "online",
@@ -48,6 +53,7 @@ def root():
             "GET /dataset"
         ]
     }
+
 
 if __name__ == "__main__":
     import uvicorn
