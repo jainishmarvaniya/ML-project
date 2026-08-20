@@ -44,11 +44,10 @@
   /* ── Light mode overrides ───────────────────────────────────────── */
 
   /* Dark backgrounds → light equivalents */
-  html:not(.dark) .bg-\[#030712\],
-  html:not(.dark) .bg-\[#030712\]\/70,
-  html:not(.dark) .bg-\[#030712\]\/95 {
+  html:not(.dark) [class*="bg-[#030712]"] {
     background-color: rgba(240, 244, 255, 0.92) !important;
   }
+
 
   html:not(.dark) .bg-slate-900,
   html:not(.dark) .bg-slate-900\/90,
