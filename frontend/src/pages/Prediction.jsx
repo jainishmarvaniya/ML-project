@@ -163,7 +163,7 @@ export const Prediction = () => {
       `TCS Stock Next-Day Prediction - ${result.model}`,
       `Predicted Next Close: ₹${result.prediction}`,
       `R² Score: ${result.metrics.R2}`,
-      `Fit Status: ${result.fit}`,
+      `Accuracy: ${result.metrics.TestScore ? (result.metrics.TestScore * 100).toFixed(2) + '%' : 'N/A'}`,
       `Training Time: ${result.training_time}s`,
     ].join('\n');
     navigator.clipboard.writeText(text);
@@ -294,9 +294,11 @@ export const Prediction = () => {
                   <span className="text-xs font-mono text-indigo-400 uppercase tracking-widest truncate max-w-[200px]">
                     {result.model}
                   </span>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${getBadgeColor(result.fit)}`}>
-                    {result.fit}
-                  </span>
+                  {result.metrics && result.metrics.TestScore != null && (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold border bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                      Accuracy: {(result.metrics.TestScore * 100).toFixed(2)}%
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -308,7 +310,7 @@ export const Prediction = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-800">
                   <div>
                     <span className="text-xs text-slate-400 block">R² Score (Test)</span>
                     <span className="text-lg font-bold text-emerald-400 font-mono">

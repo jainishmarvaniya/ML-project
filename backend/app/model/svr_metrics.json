@@ -1,0 +1,19 @@
+{
+  "MAE": 324.292,
+  "MSE": 311726.0418,
+  "RMSE": 558.3243,
+  "RSS": 369707085.5431,
+  "MAPE": 187.4545,
+  "R2": 0.784538,
+  "Adjusted_R2": 0.783809,
+  "Total_Rows": 5926,
+  "Train_Rows": 4740,
+  "Test_Rows": 1186,
+  "Features": [
+    "Open",
+    "High",
+    "Low",
+    "Volume"
+  ],
+  "Target": "Close"
+}

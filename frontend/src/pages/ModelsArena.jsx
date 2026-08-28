@@ -197,7 +197,7 @@ export const ModelsArena = () => {
         </motion.h1>
 
         <motion.p variants={fadeIn} className="text-slate-400 max-w-2xl mx-auto">
-          Watch 13 state-of-the-art regression models battle it out in real-time. Get an
+          Watch 5 state-of-the-art regression models battle it out in real-time. Get an
           AI-powered recommendation for your data, then predict the next-day close price
           instantly.
         </motion.p>
@@ -228,7 +228,7 @@ export const ModelsArena = () => {
         {/* Input form */}
         <motion.div variants={fadeIn}>
           <GlassCard className="border border-slate-700/60">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
               <InputField label="Open"   name="open"   value={recInputs.open}   onChange={handleRecInputChange} />
               <InputField label="High"   name="high"   value={recInputs.high}   onChange={handleRecInputChange} />
               <InputField label="Low"    name="low"    value={recInputs.low}    onChange={handleRecInputChange} />
@@ -273,7 +273,7 @@ export const ModelsArena = () => {
                 <div className="absolute inset-0 border-t-2 border-yellow-400 rounded-full animate-spin" />
               </div>
               <p className="text-sm font-medium text-slate-300 animate-pulse">
-                Analyzing 13 models with cross-validation…
+                Analyzing 5 models with cross-validation…
               </p>
             </motion.div>
           )}
@@ -312,7 +312,7 @@ export const ModelsArena = () => {
                 )}
 
                 {/* Stats grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   {recommendation.expected_accuracy != null && (
                     <MetricTile
                       label="Expected Accuracy"
@@ -416,7 +416,7 @@ export const ModelsArena = () => {
                 <div className="absolute inset-0 border-t-2 border-cyan-400 rounded-full animate-spin" />
               </div>
               <p className="text-lg font-medium text-slate-300 animate-pulse">
-                Simulating parallel training of 13 models…
+                Simulating parallel training of 5 models…
               </p>
             </motion.div>
           )}
@@ -488,7 +488,7 @@ export const ModelsArena = () => {
                           {item.Model_Name}
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">R² Score</span>
                             <div className="text-2xl font-black text-emerald-400 font-mono">
@@ -578,7 +578,7 @@ export const ModelsArena = () => {
               {/* Inputs (pre-filled from recommendation form) */}
               <div>
                 <p className="text-xs text-slate-500 mb-3 uppercase tracking-wider font-semibold">Market Inputs</p>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                   <InputField label="Open"   name="open"   value={recInputs.open}   onChange={handleRecInputChange} />
                   <InputField label="High"   name="high"   value={recInputs.high}   onChange={handleRecInputChange} />
                   <InputField label="Low"    name="low"    value={recInputs.low}    onChange={handleRecInputChange} />
@@ -648,7 +648,7 @@ export const ModelsArena = () => {
                     </div>
 
                     {/* Timing row */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-900/60 border border-slate-700/50">
                         <Clock className="w-4 h-4 text-indigo-400" />
                         <div>
@@ -696,7 +696,7 @@ export const ModelsArena = () => {
 
                     {/* Train vs Test score */}
                     {(predResult.train_score != null || predResult.Train_Score != null) && (
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <MetricTile
                           label="Train Score"
                           value={(predResult.train_score ?? predResult.Train_Score ?? 0).toFixed(6)}
@@ -710,11 +710,13 @@ export const ModelsArena = () => {
                       </div>
                     )}
 
-                    {/* Fit badge */}
-                    {(predResult.fit_status ?? predResult.Fit_Status) && (
+                    {/* Real Accuracy Badge */}
+                    {predResult.metrics && predResult.metrics.TestScore != null && (
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Model Fit:</span>
-                        <FitBadge fit={predResult.fit_status ?? predResult.Fit_Status} />
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Model Real Accuracy:</span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
+                          <Check className="w-3.5 h-3.5" /> {(predResult.metrics.TestScore * 100).toFixed(2)}%
+                        </span>
                       </div>
                     )}
                   </motion.div>

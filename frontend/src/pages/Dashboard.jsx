@@ -86,7 +86,7 @@ export const Dashboard = () => {
       </div>
 
       {/* Dataset Summary Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Rows"
           value={datasetInfo?.Total_Rows ? datasetInfo.Total_Rows.toLocaleString() : "5,926"}

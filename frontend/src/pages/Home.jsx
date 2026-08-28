@@ -70,7 +70,7 @@ export const Home = () => {
 
   const features = [
     {
-      title: "13+ Advanced Models",
+      title: "5+ Advanced Models",
       description: "From Linear Regression to XGBoost and CatBoost, dynamically trained on the latest market data.",
       icon: Cpu,
       color: "blue"
@@ -136,7 +136,7 @@ export const Home = () => {
             variants={fadeIn}
             className="text-base sm:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed"
           >
-            Empowering traders and financial analysts with precision AI stock predictions. Train 13+ state-of-the-art models on the fly and make data-driven decisions.
+            Empowering traders and financial analysts with precision AI stock predictions. Train 5+ state-of-the-art models on the fly and make data-driven decisions.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -170,7 +170,7 @@ export const Home = () => {
                 <span className="text-xs text-slate-400 font-mono">TCS.NS</span>
               </div>
 
-              <form onSubmit={handleQuickPredict} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <form onSubmit={handleQuickPredict} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="text-xs text-slate-400 font-medium block mb-1">Open Price (₹)</label>
                   <input
@@ -229,7 +229,7 @@ export const Home = () => {
 
       {/* Live Model Statistics Counter Bar */}
       <section className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div ref={el => cardsRef.current[0] = el}>
             <StatCard
               title="Total Historical Records"
@@ -243,7 +243,7 @@ export const Home = () => {
           <div ref={el => cardsRef.current[1] = el}>
              <StatCard
               title="Available Algorithms"
-              value="13"
+              value="5"
               subtitle="Regression Models"
               icon={Layers}
               color="indigo"

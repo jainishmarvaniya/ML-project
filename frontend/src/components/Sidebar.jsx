@@ -10,7 +10,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Prediction', path: '/prediction', icon: Cpu },
     { name: 'Data Visualization', path: '/visualization', icon: LineChart },
-    { name: 'Model Evaluation', path: '/evaluation', icon: Award },
+    { name: 'Models Arena', path: '/arena', icon: Award },
     { name: 'About', path: '/about', icon: Info },
   ];
 
